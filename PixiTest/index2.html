@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>Pixi2</title>
+	<style>
+		body { margin: 0; padding: 0; background-color: #000000; }
+	</style>
+	
+	<script src="Scripts/pixi.js"></script>
+</head>
+<body>
+	
+	<script>
+
+	    // create an new instance of a pixi stage
+	    var stage = new PIXI.Stage(0x000000);
+
+	    // create a renderer instance
+	    var renderer = new PIXI.autoDetectRenderer(800, 600);
+
+	    // set the canvas width and height to fill the screen
+	    renderer.view.style.width = window.innerWidth + "px";
+	    renderer.view.style.height = window.innerHeight + "px";
+	    renderer.view.style.display = "block";
+
+	    // add render view to DOM
+	    document.body.appendChild(renderer.view);
+
+	    // OOH! SHINY!
+	    // create two render textures.. these dynamic textures will be used to draw the scene into itself
+	    var renderTexture = new PIXI.RenderTexture(800, 600);
+	    var renderTexture2 = new PIXI.RenderTexture(800, 600);
+	    var currentTexture = renderTexture;
+
+	    // create a new sprite that uses the render texture we created above
+	    var outputSprite = new PIXI.Sprite(currentTexture);
+
+	    // align the sprite
+	    outputSprite.position.x = 800 / 2;
+	    outputSprite.position.y = 600 / 2;
+	    outputSprite.anchor.x = 0.5;
+	    outputSprite.anchor.y = 0.5;
+
+	    // add to stage
+	    stage.addChild(outputSprite);
+
+	    var stuffContainer = new PIXI.DisplayObjectContainer();
+
+	    stuffContainer.position.x = 800 / 2;
+	    stuffContainer.position.y = 600 / 2
+
+	    stage.addChild(stuffContainer);
+
+
+	    // create an array of items
+	    var items = [];
+
+
+
+	    // create a text object with a nice stroke
+	    var spinningText1 = new PIXI.Text("Nice", { font: "bold 60px Arial", fill: "#ffffff", align: "center", stroke: "#ffba00", strokeThickness: 6 });
+	    // setting the anchor point to 0.5 will center align the text... great for spinning!
+	    spinningText1.anchor.x = spinningText1.anchor.y = 0.5;
+	    spinningText1.position.x = 200;
+	    spinningText1.position.y = 200;
+	    stage.addChild(spinningText1);
+
+	    // create a text object with a nice stroke
+	    var spinningText2 = new PIXI.Text("Day", { font: "bold 60px Arial", fill: "#ffffff", align: "center", stroke: "#ff00ff", strokeThickness: 6 });
+	    // setting the anchor point to 0.5 will center align the text... great for spinning!
+	    spinningText2.anchor.x = spinningText2.anchor.y = 0.5;
+	    spinningText2.position.x = 450;
+	    spinningText2.position.y = 200;
+	    stage.addChild(spinningText2);
+
+	    // create a text object with a nice stroke
+	    var spinningText3 = new PIXI.Text("@all", { font: "bold 60px Arial", fill: "#ffffff", align: "center", stroke: "#00ff00", strokeThickness: 6 });
+	    // setting the anchor point to 0.5 will center align the text... great for spinning!
+	    spinningText3.anchor.x = spinningText3.anchor.y = 0.5;
+	    spinningText3.position.x = 350;
+	    spinningText3.position.y = 350;
+	    stage.addChild(spinningText3);
+
+	    // used for spinning!
+	    var count = 0;
+
+
+
+	    requestAnimFrame(animate);
+
+	    function animate() {
+
+	        requestAnimFrame(animate);
+
+	        count += 0.01;
+
+	        // swap the buffers..
+	        var temp = renderTexture;
+	        renderTexture = renderTexture2;
+	        renderTexture2 = temp;
+
+
+	        // set the new texture
+	        outputSprite.setTexture(renderTexture);
+
+	        // twist this up!
+	        stuffContainer.rotation -= 0.1;
+	        outputSprite.scale.x = outputSprite.scale.y = 1.0 + Math.sin(count) * 0.02;
+	        outputSprite.rotation += 0.005;
+
+	        // render the stage to the texture
+	        // the true clears the texture before content is rendered
+	        renderTexture2.render(stage, new PIXI.Point(0, 0), true);
+
+	        // and finally render the stage
+	        renderer.render(stage);
+	    }
+
+	</script>
+</body>
+</html>

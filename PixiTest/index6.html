@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>Pixi6</title>
+	<style>
+		body { margin: 0; padding: 0; background-color: #000000; }
+	</style>
+	
+	<script src="Scripts/pixi.js"></script>
+</head>
+<body>
+	
+	<script>
+
+	    // create an new instance of a pixi stage
+	    var stage = new PIXI.Stage(0x000000, true);
+
+	    stage.setInteractive(true);
+
+	    var sprite = PIXI.Sprite.fromImage("content/blume.png");
+	    //stage.addChild(sprite);
+	    // create a renderer instance
+	    // the 5the parameter is the anti aliasing
+	    var renderer = PIXI.autoDetectRenderer(800, 600, null, false, true);
+
+	    // set the canvas width and height to fill the screen
+	    renderer.view.style.width = window.innerWidth + "px";
+	    renderer.view.style.height = window.innerHeight + "px";
+	    renderer.view.style.display = "block";
+
+	    // add render view to DOM
+	    document.body.appendChild(renderer.view);
+
+	    var renderTexture = new PIXI.RenderTexture(800, 600);
+	    var renderTexture2 = new PIXI.RenderTexture(800, 600);
+	    var currentTexture = renderTexture;
+
+	    var stuffContainer = new PIXI.DisplayObjectContainer();
+
+	    stuffContainer.position.x = 0;
+	    stuffContainer.position.y = 0;
+
+	    stage.addChild(stuffContainer);
+	    
+
+	    // lets create moving shape
+	    var thing = new PIXI.Graphics();
+	    
+        
+	    
+	    thing.position.x = 400;
+	    thing.position.y = 300;
+	    stuffContainer.addChild(thing);
+	    
+
+
+	    var count = 0;
+	    requestAnimFrame(animate);
+
+
+	    function animate() {
+	        requestAnimFrame(animate);
+	        //thing.clear();
+
+	        count += 1;
+
+	        // swap the buffers..
+	        var temp = renderTexture;
+	        renderTexture = renderTexture2;
+	        renderTexture2 = temp;
+
+	        //thing.clear();
+	        
+	        var r = parseInt((255 * Math.random()) + 1);
+	        var g = parseInt((255 * Math.random()) + 1);
+	        var b = parseInt((255 * Math.random()) + 1);
+	        var color = 'rgb(' + r + ',' + g + ',' + b + ')';
+
+	        thing.lineStyle(1, r + g, 1);
+	        thing.drawCircle(0,0, count);
+
+            thing.rotation += count / 100;
+
+            stuffContainer.rotation -= 0.01;
+
+            renderTexture2.render(stage, new PIXI.Point(0, 0), true);
+	        renderer.render(stage);
+	        
+	        if (count > 360) count = 0;
+	    }
+
+	</script>
+</body>
+</html>
+
+

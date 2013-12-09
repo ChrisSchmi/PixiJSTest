@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>Pixi5</title>
+	<style>
+		body { margin: 0; padding: 0; background-color: #000000; }
+	</style>
+	
+	<script src="Scripts/pixi.js"></script>
+</head>
+<body>
+	
+	<script>
+
+	    // create an new instance of a pixi stage
+	    var stage = new PIXI.Stage(0x000000);
+
+	    // create a renderer instance
+	    var rWidth = 800;
+	    var rHeight = 600;
+	    var renderer = new PIXI.autoDetectRenderer(rWidth, rHeight);
+
+	    // set the canvas width and height to fill the screen
+	    renderer.view.style.width = window.innerWidth + "px";
+	    renderer.view.style.height = window.innerHeight + "px";
+	    renderer.view.style.display = "block";
+
+	    // add render view to DOM
+	    document.body.appendChild(renderer.view);
+
+	    var renderTexture = new PIXI.RenderTexture(rWidth, rHeight);
+	    var sprites = [];
+
+	    var greens = ['#08e700', '#2dbb28', '#387a36', '#235021', '#1e311d'];
+	    var char = '\u25EF';
+
+	    for (var i = 0; i < 38; i++) {
+	        for (var j = 0; j < 16; j++) {
+
+	            var r = parseInt((255 * Math.random()) + 1);
+	            var g = parseInt((255 * Math.random()) + 1);
+	            var b = parseInt((255 * Math.random()) + 1);
+
+	            var color = 'rgb('+ r +',' + g + ',' + b +')';
+
+	            var sprite = new PIXI.Text(char, { font: "38px Arial", fill: color, align: "center", stroke: color, strokeThickness: 5 });
+
+	            // setting the anchor point to 0.5 will center align the text... great for spinning!
+	            sprite.anchor.x = 0.5;
+	            sprite.anchor.y = 0.5;
+	            sprite.position.x = 12 + (21 * i);
+	            sprite.position.y = 40 * j;
+
+	            sprites.push(sprite);
+	            stage.addChild(sprite);
+	        }
+	    }
+
+
+	    // used for spinning!
+	    var count = 0;
+
+
+
+	    requestAnimFrame(animate);
+
+	    function animate() {
+
+	        requestAnimFrame(animate);
+
+	        for (var i = 0; i < sprites.length; i++) {
+	            var s = sprites[i];
+
+	            //s.position.x = (rWidth / 2) + 200 * Math.cos((count + 10 * i));
+	            s.position.y += 2;
+
+	            if (s.position.y > rHeight + 40) {
+	                s.position.y = 0;
+	                //s = newCharLine(s);
+	            }
+
+	            s.rotation = (s.position.y / 100) - (s.position.x / 100);
+	            //s.scale.x = 1 + Math.sin(s.position.y / 100);
+	            //s.scale.y = 1 + Math.cos(s.position.y / 100);
+	        }
+
+	        // and finally render the stage
+	        renderer.render(stage);
+	    }
+
+
+	</script>
+</body>
+</html>
+
+

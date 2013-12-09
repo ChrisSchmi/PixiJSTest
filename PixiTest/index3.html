@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>Pixi3</title>
+	<style>
+		body { margin: 0; padding: 0; background-color: #000000; }
+	</style>
+	
+	<script src="Scripts/pixi.js"></script>
+</head>
+<body>
+	
+	<script>
+
+		// create an new instance of a pixi stage
+		var stage = new PIXI.Stage(0xcfcfcf);
+
+		// create a renderer instance
+		var rWidth = 800;
+		var rHeight = 600;
+		var renderer = new PIXI.autoDetectRenderer(rWidth, rHeight);
+
+		// set the canvas width and height to fill the screen
+		renderer.view.style.width = window.innerWidth + "px";
+		renderer.view.style.height = window.innerHeight + "px";
+		renderer.view.style.display = "block";
+
+		// add render view to DOM
+		document.body.appendChild(renderer.view);
+
+		var renderTexture = new PIXI.RenderTexture(rWidth, rHeight);
+
+		// create an empty container
+		var textContainer = new PIXI.DisplayObjectContainer();
+		textContainer.position.x = 0;
+		textContainer.position.y = 0;
+
+		stage.addChild(textContainer);
+
+
+		
+		var words = ['1','2','3','4','5'];
+		var sprites = [];
+
+
+		var main = new PIXI.Text("MAIN", { font: "bold 40px Arial", fill: "#ffffff", align: "center", stroke: "#ffba00", strokeThickness: 3 });
+		// setting the anchor point to 0.5 will center align the text... great for spinning!
+		main.anchor.x = 0.5;
+		main.anchor.y = 0.5;
+		main.position.x = rWidth / 2;
+		main.position.y = rHeight / 2;
+		textContainer.addChild(main);
+
+		
+		for (var i = 0; i < words.length; i++) {
+			var sprite = new PIXI.Text(words[i], { font: "bold 40px Arial", fill: "#ffffff", align: "center", stroke: "#ffba00", strokeThickness: 3 });
+
+			// setting the anchor point to 0.5 will center align the text... great for spinning!
+			sprite.anchor.x = 0.5;
+			sprite.anchor.y = 0.5;
+			sprite.position.x = rWidth + 150 * Math.sin(20 * i);
+			sprite.position.y = rHeight + 150 * Math.cos(20 * i);
+			
+			sprites.push(sprite);
+			textContainer.addChild(sprite);
+		}
+		
+
+		// used for spinning!
+		var count = 0;
+
+
+
+		requestAnimFrame(animate);
+
+		function animate() {
+
+			requestAnimFrame(animate);
+
+			for (var i = 0; i < sprites.length; i++)
+			{
+				var s = sprites[i];
+				s.position.x = (rWidth/2) + 200 * Math.cos((count + 10 * i));
+				s.position.y = (rHeight/2) + 200 * Math.sin((count + 10 * i));
+				
+				s.rotation = (2*count % 360) / -3.0;
+
+				s.scale.x = 1.5 + Math.sin(count+i / (10.0 - i)) * 0.6;
+				s.scale.y = 1.5 + Math.sin(count+i / (10.0 - i)) * 0.6;
+
+				main.scale.x = 2 + Math.cos(count / 5.0) * 0.5;
+				main.scale.y = 2 + Math.cos(count / 5.0) * 0.5;
+			}    
+
+			if (count <= 360)
+			{
+				count += 0.025;
+			}
+			else
+			{
+				count = 0;
+			}
+
+			// and finally render the stage
+			renderer.render(stage);
+		}
+
+	</script>
+</body>
+</html>
+
+
