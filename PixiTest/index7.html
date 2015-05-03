@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Pixi7</title>
+    <style>
+        body { margin: 0; padding: 0; background-color: #000000; }
+    </style>
+
+    <script src="Scripts/pixi.js"></script>
+</head>
+<body>
+
+    <script>
+        PIXI.Texture.Draw = function (cb) {
+            var canvas = document.createElement('canvas');
+            if (typeof cb == 'function') cb(canvas);
+            return PIXI.Texture.fromCanvas(canvas);
+        }
+
+
+        // create an new instance of a pixi stage
+        var stage = new PIXI.Stage(0x000000);
+
+        // create a renderer instance
+        var rWidth = 64;
+        var rHeight = 64;
+        var renderer = new PIXI.autoDetectRenderer(rWidth, rHeight);
+
+        // set the canvas width and height to fill the screen
+        renderer.view.style.width = window.innerWidth + "px";
+        renderer.view.style.height = window.innerHeight + "px";
+        renderer.view.style.display = "block";
+
+        // add render view to DOM
+        document.body.appendChild(renderer.view);
+
+        
+        var counter = 0;
+        var ZOOMFACTOR = 0.525;
+        var PlasmaColor = [];
+        var sprites = [];
+        var PI = Math.PI;
+        //var inc = 10;
+        var animationTextures = [];
+        var oneWayAnimation;
+
+        
+        for (var x = 0; x < rWidth; x++) {
+            for (var y = 0; y < rHeight ; y++) {
+                PlasmaColor.push((30 * Math.sin(x / (256 / 2.25 / PI) / ZOOMFACTOR * 1.283) + 20 * Math.cos(y / (256 / 2 / PI) / ZOOMFACTOR * 2.085) + 30 * Math.sin((x + y) / (256 / 2 / PI) / ZOOMFACTOR * .031)) % 255);
+            }
+        }
+
+        function reCreatePlasma(offset)
+        {
+            //drawing procedural texture and use it as a PIXI sprite
+            var sprite = new PIXI.Sprite(PIXI.Texture.Draw(function (canvas) {
+                //we are now in a 2D context
+                //you need to specify your canvas width and height otherwise it'll have a size of 0x0 and you'll get an empty sprite
+                canvas.width = rWidth;
+                canvas.height = rHeight;
+
+                var ctx = canvas.getContext('2d');  //get  canvas 2D context
+                ctx.fillStyle = "black";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                var pix = ctx.createImageData(canvas.width, canvas.height);
+                var colIndex = 0;
+
+                for (var x = 0; x < pix.data.length; x += 4) {
+                    
+                    pix.data[x] = PlasmaColor[colIndex] * 12 + offset; // red
+                    pix.data[x + 1] = offset - ( PlasmaColor[colIndex] * 12) / 2;       // green
+                    pix.data[x + 2] = PlasmaColor[colIndex] * 12;      // blue
+                    pix.data[x + 3] = 255;     // alpha
+                    colIndex++;
+                }
+
+                ctx.putImageData(pix, 0, 0);
+            }));
+            return sprite;
+        }
+
+
+        //var allDirections = [];
+        var tempTexture;
+        var currentAnimation;
+        var bound = 1750 / 2;
+
+            var animationTextures = [];
+            for (var j = 0; j < bound; j++) {
+                tempTexture = reCreatePlasma(j).texture;
+                PIXI.TextureCache[j] = tempTexture;
+                animationTextures.push(tempTexture);
+            }
+            for (var j = bound; j > 0; j--) {
+                var i = bound + (bound - j);
+                tempTexture = reCreatePlasma(j).texture;
+                PIXI.TextureCache[i] = tempTexture;
+                animationTextures.push(tempTexture);
+            }
+
+            var oneWayAnimation = new PIXI.MovieClip(animationTextures);
+            oneWayAnimation.stop();
+
+            oneWayAnimation.visible = true;
+            currentAnimation = oneWayAnimation;
+            stage.addChild(oneWayAnimation);
+
+
+        // start animating
+            var f = new PIXI.BlurFilter();
+            f.blur = 45;
+            //stage.filters = [f];
+        requestAnimFrame(animate);
+
+        var framesPerSecond = 150;
+        var msPerFrame = 1000 / framesPerSecond;
+        var walkCycleFrameCount = bound * 2;
+
+        function animate() {
+            var animationAgeInMs = new Date().getTime();
+            var aniIndex = (Math.floor(animationAgeInMs / msPerFrame) % walkCycleFrameCount);
+            currentAnimation.gotoAndStop(aniIndex);
+
+            renderer.render(stage);
+            requestAnimFrame(animate);
+        }
+               
+    </script>
+</body>
+</html>
+
+

@@ -61,11 +61,16 @@
     <Content Include="Content\blume2.png" />
     <Content Include="Content\blume3.png" />
     <Content Include="index.html" />
+    <Content Include="index10.html" />
+    <Content Include="index11.html" />
     <Content Include="index2.html" />
     <Content Include="index3.html" />
     <Content Include="index4.html" />
     <Content Include="index5.html" />
     <Content Include="index6.html" />
+    <Content Include="index7.html" />
+    <Content Include="index8.html" />
+    <Content Include="index9.html" />
     <Content Include="Scripts\pixi.dev.js" />
     <Content Include="Scripts\pixi.js" />
     <Content Include="Web.config" />
